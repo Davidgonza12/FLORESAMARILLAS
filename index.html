@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Ramo Elegante</title>
+<title>Ramo Responsive Elegante</title>
 
 <style>
 body {
@@ -15,25 +15,28 @@ body {
     overflow: hidden;
 }
 
-/* CONTENEDOR */
+/* CONTENEDOR RESPONSIVE */
 .ramo {
     position: relative;
-    width: 350px;
-    height: 400px;
+    width: 90vw;
+    max-width: 400px;
+    height: 80vh;
+    max-height: 500px;
 }
 
-/* TALLO */
+/* TALLOS */
 .tallo {
     position: absolute;
     bottom: 0;
-    width: 4px;
+    width: 0.8vw;
+    min-width: 3px;
     background: linear-gradient(#1f7a4c, #0b3d2e);
     left: 50%;
     transform: translateX(-50%);
     height: var(--h);
 }
 
-/* FLOR */
+/* FLOR BASE */
 .flor {
     position: absolute;
     left: 50%;
@@ -44,8 +47,7 @@ body {
 }
 
 /* CENTRO */
-.flor::before {
-    content: "";
+.centro {
     position: absolute;
     width: 30%;
     height: 30%;
@@ -53,32 +55,36 @@ body {
     border-radius: 50%;
     top: 35%;
     left: 35%;
-    box-shadow: 0 0 10px gold;
+    box-shadow: 0 0 12px gold;
 }
 
-/* PÉTALOS */
+/* PÉTALOS REDONDOS */
 .petalo {
     position: absolute;
     width: 50%;
     height: 50%;
-    background: linear-gradient(yellow, #ffcc00);
+    background: linear-gradient(#fff176, #fbc02d);
     border-radius: 50%;
 }
 
-.p1 { top: 0; left: 25%; }
-.p2 { top: 25%; right: 0; }
-.p3 { bottom: 0; left: 25%; }
-.p4 { top: 25%; left: 0; }
+/* GIRASOL */
+.petalo-largo {
+    position: absolute;
+    width: 30%;
+    height: 60%;
+    background: linear-gradient(#ffeb3b, #f57f17);
+    border-radius: 50%;
+}
 
 /* HOJAS */
 .hoja {
     position: absolute;
     bottom: 0;
-    width: 60px;
+    width: 15vw;
+    max-width: 60px;
     height: 20px;
     background: linear-gradient(#1f7a4c, #0b3d2e);
     border-radius: 50%;
-    transform-origin: left;
 }
 
 /* PARTÍCULAS */
@@ -88,13 +94,13 @@ body {
     height: 3px;
     background: gold;
     border-radius: 50%;
-    animation: flotar 4s infinite;
+    animation: flotar 5s infinite;
 }
 
 @keyframes flotar {
     0% { transform: translateY(0); opacity: 0; }
     50% { opacity: 1; }
-    100% { transform: translateY(-80px); opacity: 0; }
+    100% { transform: translateY(-100px); opacity: 0; }
 }
 </style>
 </head>
@@ -104,38 +110,64 @@ body {
 <div class="ramo" id="ramo"></div>
 
 <script>
-function crearFlor(x, altura, size) {
+function florRedonda(flor) {
+    for (let i = 0; i < 4; i++) {
+        const p = document.createElement("div");
+        p.className = "petalo";
+        if (i === 0) p.style.top = "0", p.style.left = "25%";
+        if (i === 1) p.style.top = "25%", p.style.right = "0";
+        if (i === 2) p.style.bottom = "0", p.style.left = "25%";
+        if (i === 3) p.style.top = "25%", p.style.left = "0";
+        flor.appendChild(p);
+    }
+}
+
+function girasol(flor) {
+    for (let i = 0; i < 8; i++) {
+        const p = document.createElement("div");
+        p.className = "petalo-largo";
+        p.style.top = "20%";
+        p.style.left = "35%";
+        p.style.transform = `rotate(${i * 45}deg)`;
+        flor.appendChild(p);
+    }
+}
+
+function crearFlor(x, altura, size, tipo) {
     const cont = document.createElement("div");
     cont.style.position = "absolute";
-    cont.style.left = x + "px";
+    cont.style.left = x + "%";
     cont.style.bottom = "0";
 
     // TALLO
     const tallo = document.createElement("div");
     tallo.className = "tallo";
-    tallo.style.setProperty('--h', altura + "px");
+    tallo.style.setProperty('--h', altura + "vh");
 
     // FLOR
     const flor = document.createElement("div");
     flor.className = "flor";
-    flor.style.setProperty('--size', size + "px");
-    flor.style.setProperty('--h', altura + "px");
+    flor.style.setProperty('--size', size + "vw");
+    flor.style.setProperty('--h', altura + "vh");
 
-    for (let i = 1; i <= 4; i++) {
-        const p = document.createElement("div");
-        p.className = "petalo p" + i;
-        flor.appendChild(p);
-    }
+    // TIPO
+    if (tipo === "girasol") girasol(flor);
+    else florRedonda(flor);
+
+    // CENTRO
+    const centro = document.createElement("div");
+    centro.className = "centro";
+    flor.appendChild(centro);
 
     // HOJAS
     const hoja1 = document.createElement("div");
     hoja1.className = "hoja";
-    hoja1.style.left = "-50px";
+    hoja1.style.left = "-10vw";
     hoja1.style.transform = "rotate(-30deg)";
 
     const hoja2 = document.createElement("div");
     hoja2.className = "hoja";
-    hoja2.style.left = "10px";
+    hoja2.style.left = "5vw";
     hoja2.style.transform = "rotate(30deg)";
 
     cont.appendChild(tallo);
@@ -146,22 +178,26 @@ function crearFlor(x, altura, size) {
     document.getElementById("ramo").appendChild(cont);
 
     // PARTÍCULAS
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
         const p = document.createElement("div");
         p.className = "particula";
-        p.style.left = (x + Math.random()*30) + "px";
-        p.style.bottom = (altura) + "px";
-        p.style.animationDelay = Math.random()*4 + "s";
+        p.style.left = (x + Math.random()*5) + "%";
+        p.style.bottom = altura + "vh";
+        p.style.animationDelay = Math.random()*5 + "s";
         document.body.appendChild(p);
     }
 }
 
-/* RAMO CENTRADO */
-crearFlor(175, 220, 70);
-crearFlor(140, 200, 60);
-crearFlor(210, 200, 60);
-crearFlor(110, 180, 50);
-crearFlor(240, 180, 50);
+/* RAMO EN FORMA BONITA */
+crearFlor(50, 35, 15, "girasol");
+crearFlor(40, 30, 13, "normal");
+crearFlor(60, 30, 13, "normal");
+
+crearFlor(30, 25, 11, "girasol");
+crearFlor(70, 25, 11, "girasol");
+
+crearFlor(20, 20, 9, "normal");
+crearFlor(80, 20, 9, "normal");
 </script>
 
 </body>
